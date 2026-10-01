@@ -139,6 +139,6 @@ DEBUG = os.environ.get("DJANGO_DEBUG", "1") == "1"
 ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "*").split(",")
 STATIC_ROOT = BASE_DIR / "staticfiles"
 CORS_ALLOWED_ORIGINS = [o for o in os.environ.get("CORS_ALLOWED_ORIGINS", "http://localhost:5173").split(",") if o]
-CORS_ALLOWED_ORIGIN_REGEXES = [r"^https://.*\.vercel\.app$"]
+CORS_ALLOWED_ORIGIN_REGEXES = [r"^https://([a-z0-9-]+\.)*(vercel\.app|netlify\.app)$"]
 REST_FRAMEWORK = {"DEFAULT_RENDERER_CLASSES": ["rest_framework.renderers.JSONRenderer"]}
 NOMINATIM_USER_AGENT = os.environ.get("NOMINATIM_USER_AGENT", "spotter-eld-trip-planner/1.0")

@@ -61,7 +61,7 @@ everything. Set `CORS_ALLOWED_ORIGINS` to the Vercel URL and `NOMINATIM_USER_AGE
 (see `backend/.env.example`).
 
 **Frontend → Vercel.** Import the repo, set *Root Directory* to `frontend`, add the env var
-`VITE_API_URL=https://<your-render-service>.onrender.com`, deploy. Any `*.vercel.app` origin is already allowed by CORS.
+`VITE_API_URL=https://<your-render-service>.onrender.com`, deploy. Any `*.vercel.app` or `*.netlify.app` origin is already allowed by CORS.
 
 The free Render tier sleeps when idle, so the first request after a pause can take ~30 s.
 
