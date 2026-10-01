@@ -1,4 +1,4 @@
-import type { DailyLog, Status, Stop } from '../types'
+import type { DailyLog, LogDetails, Status, Stop } from '../types'
 import { clock, shortPlace } from '../format'
 
 interface Props {
@@ -7,6 +7,7 @@ interface Props {
   from: string
   to: string
   stops: Stop[]
+  details: LogDetails
 }
 
 const W = 1000
@@ -32,7 +33,7 @@ function trunc(s: string, n: number) {
   return s.length > n ? s.slice(0, n - 1) + '…' : s
 }
 
-export default function LogSheet({ log, date, from, to, stops }: Props) {
+export default function LogSheet({ log, date, from, to, stops, details }: Props) {
   const hourLabels = ['Mid-\nnight', ...Array.from({ length: 11 }, (_, i) => String(i + 1)), 'Noon',
     ...Array.from({ length: 11 }, (_, i) => String(i + 1)), 'Mid-\nnight']
 
@@ -106,17 +107,19 @@ export default function LogSheet({ log, date, from, to, stops }: Props) {
           <text x={b.x + 80} y="214" fontSize="11" textAnchor="middle">{b.c}</text>
         </g>
       ))}
+      <text x="44" y="245" fontSize="13">{trunc(details.vehicle, 52)}</text>
       <line x1="40" x2="470" y1="250" y2="250" stroke={INK} />
       <text x="255" y="266" fontSize="11" textAnchor="middle">
         Truck/Tractor and Trailer Numbers or License Plate(s)/State (show each unit)
       </text>
 
       {[
-        { y: 170, c: 'Name of Carrier or Carriers' },
-        { y: 212, c: 'Main Office Address' },
-        { y: 254, c: 'Home Terminal Address' },
+        { y: 170, c: 'Name of Carrier or Carriers', v: details.carrier },
+        { y: 212, c: 'Main Office Address', v: details.mainOffice },
+        { y: 254, c: 'Home Terminal Address', v: details.homeTerminal },
       ].map((l) => (
         <g key={l.c}>
+          <text x="524" y={l.y - 5} fontSize="13">{trunc(l.v, 54)}</text>
           <line x1="520" x2="960" y1={l.y} y2={l.y} stroke={INK} />
           <text x="740" y={l.y + 15} fontSize="11" textAnchor="middle">{l.c}</text>
         </g>
@@ -185,8 +188,10 @@ export default function LogSheet({ log, date, from, to, stops }: Props) {
 
       {/* shipping documents */}
       <text x="40" y="660" fontSize="13" fontWeight="700">Shipping Documents:</text>
+      <text x="44" y="686" fontSize="13">{trunc(details.manifest, 52)}</text>
       <line x1="40" x2="470" y1="692" y2="692" stroke={INK} />
       <text x="40" y="708" fontSize="11">DVL or Manifest No. or</text>
+      <text x="44" y="736" fontSize="13">{trunc(details.shipper, 52)}</text>
       <line x1="40" x2="470" y1="742" y2="742" stroke={INK} />
       <text x="40" y="758" fontSize="11">Shipper &amp; Commodity</text>
 

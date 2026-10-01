@@ -56,3 +56,21 @@ export interface TripPlan {
 export interface ApiErrors {
   errors: Record<string, string>
 }
+
+export interface LogDetails {
+  carrier: string
+  mainOffice: string
+  homeTerminal: string
+  vehicle: string
+  manifest: string
+  shipper: string
+}
+
+export const EMPTY_DETAILS: LogDetails = {
+  carrier: '',
+  mainOffice: '',
+  homeTerminal: '',
+  vehicle: '',
+  manifest: '',
+  shipper: '',
+}

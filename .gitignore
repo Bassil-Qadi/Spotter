@@ -8,3 +8,4 @@ dist/
 staticfiles/
 backend.log
 frontend.log
+frontend2.log

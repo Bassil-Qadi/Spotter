@@ -64,6 +64,15 @@ button { font: inherit; cursor: pointer; }
 @keyframes spin { to { transform: rotate(360deg); } }
 .alert { padding: 12px 14px; border-radius: 10px; background: #fef2f2; border: 1px solid #fecaca; color: var(--danger); font-size: 14px; }
 
+/* optional details */
+.optional { border: 1px solid var(--line); border-radius: 10px; background: #f8fafc; }
+.optional summary { cursor: pointer; padding: 10px 12px; font-size: 13.5px; font-weight: 600; color: #334155; list-style: none; display: flex; justify-content: space-between; align-items: center; }
+.optional summary::-webkit-details-marker { display: none; }
+.optional summary::after { content: '+'; font-size: 18px; color: var(--muted); }
+.optional[open] summary::after { content: '–'; }
+.optional-fields { display: grid; gap: 12px; padding: 4px 12px 14px; }
+.hint.left { text-align: left; }
+
 /* empty */
 .empty { text-align: center; padding: 64px 32px; display: grid; gap: 10px; justify-items: center; }
 .empty-art { font-size: 44px; }

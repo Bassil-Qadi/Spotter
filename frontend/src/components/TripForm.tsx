@@ -1,13 +1,24 @@
 import { useState } from 'react'
 import type { FormEvent } from 'react'
-import type { TripInput } from '../types'
+import type { LogDetails, TripInput } from '../types'
 import { todayISO } from '../format'
 
 interface Props {
   loading: boolean
   fieldErrors: Record<string, string>
+  details: LogDetails
+  onDetailsChange: (d: LogDetails) => void
   onSubmit: (input: TripInput, startDate: string) => void
 }
+
+const DETAIL_FIELDS: { key: keyof LogDetails; label: string; placeholder: string }[] = [
+  { key: 'carrier', label: 'Name of carrier', placeholder: 'e.g. Acme Freight Inc.' },
+  { key: 'mainOffice', label: 'Main office address', placeholder: 'e.g. 100 Main St, Dallas, TX' },
+  { key: 'homeTerminal', label: 'Home terminal address', placeholder: 'e.g. 55 Depot Rd, Chicago, IL' },
+  { key: 'vehicle', label: 'Truck / trailer no. or plates', placeholder: 'e.g. Truck 214 · Trailer 7781 · IL ABC123' },
+  { key: 'manifest', label: 'DVL or manifest no.', placeholder: 'e.g. BOL 458213' },
+  { key: 'shipper', label: 'Shipper & commodity', placeholder: 'e.g. Acme Foods – packaged goods' },
+]
 
 const EXAMPLE = {
   current: 'Chicago, IL',
@@ -16,7 +27,7 @@ const EXAMPLE = {
   cycle: '30',
 }
 
-export default function TripForm({ loading, fieldErrors, onSubmit }: Props) {
+export default function TripForm({ loading, fieldErrors, details, onDetailsChange, onSubmit }: Props) {
   const [current, setCurrent] = useState('')
   const [pickup, setPickup] = useState('')
   const [dropoff, setDropoff] = useState('')
@@ -125,6 +136,26 @@ export default function TripForm({ loading, fieldErrors, onSubmit }: Props) {
           </select>
         </div>
       </div>
+
+      <details className="optional">
+        <summary>Log sheet details <span className="muted">(optional)</span></summary>
+        <div className="optional-fields">
+          {DETAIL_FIELDS.map((f) => (
+            <div className="field" key={f.key}>
+              <label htmlFor={`d-${f.key}`}>{f.label}</label>
+              <input
+                id={`d-${f.key}`}
+                type="text"
+                value={details[f.key]}
+                maxLength={80}
+                placeholder={f.placeholder}
+                onChange={(e) => onDetailsChange({ ...details, [f.key]: e.target.value })}
+              />
+            </div>
+          ))}
+          <p className="hint left">Printed on every log sheet. Edits apply instantly, no need to re-plan.</p>
+        </div>
+      </details>
 
       <button className="primary" type="submit" disabled={loading}>
         {loading ? (

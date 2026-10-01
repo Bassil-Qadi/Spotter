@@ -1,14 +1,33 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import './App.css'
 import { ApiError, planTrip } from './api'
-import type { TripInput, TripPlan } from './types'
+import { EMPTY_DETAILS } from './types'
+import type { LogDetails, TripInput, TripPlan } from './types'
 import { addDays, duration, hours, shortDate, shortPlace } from './format'
 import TripForm from './components/TripForm'
 import RouteMap from './components/RouteMap'
 import Timeline from './components/Timeline'
 import LogSheet from './components/LogSheet'
 
+const DETAILS_KEY = 'spotter.logDetails'
+
+function loadDetails(): LogDetails {
+  try {
+    return { ...EMPTY_DETAILS, ...JSON.parse(localStorage.getItem(DETAILS_KEY) ?? '{}') }
+  } catch {
+    return EMPTY_DETAILS
+  }
+}
+
 export default function App() {
+  const [details, setDetails] = useState<LogDetails>(loadDetails)
+  useEffect(() => {
+    try {
+      localStorage.setItem(DETAILS_KEY, JSON.stringify(details))
+    } catch {
+      /* storage unavailable: details just won't persist */
+    }
+  }, [details])
   const [plan, setPlan] = useState<TripPlan | null>(null)
   const [startDate, setStartDate] = useState('')
   const [loading, setLoading] = useState(false)
@@ -54,7 +73,13 @@ export default function App() {
 
       <main className="layout">
         <aside className="side">
-          <TripForm loading={loading} fieldErrors={fieldErrors} onSubmit={handleSubmit} />
+          <TripForm
+            loading={loading}
+            fieldErrors={fieldErrors}
+            details={details}
+            onDetailsChange={setDetails}
+            onSubmit={handleSubmit}
+          />
           {error && (
             <div className="alert" role="alert">
               {error}
@@ -125,6 +150,7 @@ export default function App() {
                       from={shortPlace(plan.places[0].name)}
                       to={shortPlace(plan.places[2].name)}
                       stops={plan.stops}
+                      details={details}
                     />
                   </div>
                 )}
