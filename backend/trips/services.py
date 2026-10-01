@@ -1,5 +1,8 @@
 """Geocoding (Nominatim) and routing (OSRM) using free, keyless public APIs."""
 import math
+import threading
+import time
+from functools import lru_cache
 
 import requests
 from django.conf import settings
@@ -13,7 +16,23 @@ class ServiceError(Exception):
     pass
 
 
-def geocode(query):
+_throttle_lock = threading.Lock()
+_last_call = 0.0
+
+
+def _throttle(min_gap=1.05):
+    """Nominatim's usage policy allows at most ~1 request per second."""
+    global _last_call
+    with _throttle_lock:
+        wait = _last_call + min_gap - time.monotonic()
+        if wait > 0:
+            time.sleep(wait)
+        _last_call = time.monotonic()
+
+
+@lru_cache(maxsize=256)
+def _geocode_cached(query):
+    _throttle()
     try:
         r = requests.get(
             "https://nominatim.openstreetmap.org/search",
@@ -29,6 +48,10 @@ def geocode(query):
         raise ServiceError(f"Could not find location: '{query}'")
     hit = data[0]
     return {"query": query, "name": hit["display_name"], "lat": float(hit["lat"]), "lng": float(hit["lon"])}
+
+
+def geocode(query):
+    return dict(_geocode_cached(query.strip().lower()))
 
 
 def route(points):

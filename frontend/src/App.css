@@ -26,7 +26,7 @@ h1, h2, h3, h4, p { margin: 0; }
 
 .layout { display: grid; grid-template-columns: 360px minmax(0, 1fr); gap: 20px; max-width: 1320px; margin: 0 auto; padding: 20px 24px 48px; align-items: start; }
 .side { position: sticky; top: 16px; display: grid; gap: 12px; }
-.content { display: grid; gap: 16px; min-width: 0; }
+.content { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; min-width: 0; }
 
 .card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); padding: 18px; }
 .card-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
@@ -84,7 +84,7 @@ button { font: inherit; cursor: pointer; }
 .pin.sm { width: 26px; height: 26px; font-size: 11px; flex: none; box-shadow: none; }
 
 /* timeline */
-.timeline { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 18px 24px; }
+.timeline { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr)); gap: 18px 24px; }
 .timeline h4 { font-size: 13.5px; margin-bottom: 8px; padding-bottom: 6px; border-bottom: 1px solid var(--line); }
 .timeline ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
 .timeline li { display: flex; gap: 10px; align-items: flex-start; font-size: 14px; }
@@ -98,7 +98,7 @@ button { font: inherit; cursor: pointer; }
 .sheet { display: block; width: 100%; min-width: 720px; height: auto; }
 
 @media (max-width: 1000px) {
-  .layout { grid-template-columns: 1fr; padding: 16px; }
+  .layout { grid-template-columns: minmax(0, 1fr); padding: 16px; }
   .side { position: static; }
   .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .map { height: 360px; }

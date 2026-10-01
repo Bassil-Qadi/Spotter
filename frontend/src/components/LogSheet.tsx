@@ -84,8 +84,9 @@ export default function LogSheet({ log, date, from, to, stops }: Props) {
           {i < 2 && <text x={f.x + 100} y="62" fontSize="16">/</text>}
         </g>
       ))}
-      <text x="720" y="50" fontSize="11">Original – File at home terminal.</text>
-      <text x="720" y="66" fontSize="11">Duplicate – Driver retains in his/her possession for 8 days.</text>
+      <text x="700" y="48" fontSize="10.5">Original – File at home terminal.</text>
+      <text x="700" y="63" fontSize="10.5">Duplicate – Driver retains in his/her</text>
+      <text x="700" y="77" fontSize="10.5">possession for 8 days.</text>
 
       <text x="40" y="118" fontSize="14" fontWeight="700">From:</text>
       <text x="90" y="118" fontSize="14">{trunc(from, 34)}</text>

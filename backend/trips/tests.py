@@ -83,3 +83,50 @@ class HosRules(SimpleTestCase):
     def test_total_miles(self):
         plan, _ = run((123, 120), (877, 800))
         self.assertAlmostEqual(plan.total_miles, 1000, delta=0.5)
+
+
+from unittest import mock
+
+from rest_framework.test import APIClient
+
+from . import services
+
+PLACES = {
+    "chicago": {"query": "chicago", "name": "Chicago, Cook County, Illinois, United States", "lat": 41.88, "lng": -87.62},
+    "st louis": {"query": "st louis", "name": "St. Louis, Missouri, United States", "lat": 38.63, "lng": -90.19},
+    "denver": {"query": "denver", "name": "Denver, Colorado, United States", "lat": 39.74, "lng": -104.99},
+}
+GEOMETRY = [[41.88, -87.62], [38.63, -90.19], [39.74, -104.99]]
+
+
+class PlanApi(SimpleTestCase):
+    payload = {"current_location": "Chicago", "pickup_location": "St Louis", "dropoff_location": "Denver",
+               "cycle_used_hours": 10}
+
+    def post(self, data):
+        return APIClient().post("/api/plan/", data, format="json")
+
+    def test_validation_errors(self):
+        r = self.post({"current_location": "", "cycle_used_hours": 99})
+        self.assertEqual(r.status_code, 400)
+        for f in ("current_location", "pickup_location", "dropoff_location", "cycle_used_hours"):
+            self.assertIn(f, r.json()["errors"])
+
+    @mock.patch("trips.services.route")
+    @mock.patch("trips.services.geocode")
+    def test_plan_success(self, geocode, route):
+        geocode.side_effect = lambda q: PLACES[q.lower()]
+        route.return_value = ([(300.0, 330), (850.0, 900)], GEOMETRY)
+        r = self.post(self.payload)
+        self.assertEqual(r.status_code, 200)
+        d = r.json()
+        self.assertAlmostEqual(d["summary"]["total_miles"], 1150, delta=1)
+        self.assertEqual(d["stops"][0]["type"], "start")
+        self.assertEqual(d["stops"][-1]["type"], "dropoff")
+        self.assertEqual(len(d["logs"]), d["summary"]["total_days"])
+
+    @mock.patch("trips.services.geocode", side_effect=services.ServiceError("Could not find location: 'x'"))
+    def test_unknown_place(self, _):
+        r = self.post(self.payload)
+        self.assertEqual(r.status_code, 422)
+        self.assertIn("Could not find", r.json()["errors"]["detail"])
